@@ -1,0 +1,525 @@
+using System;
+
+namespace ADEV.ACE.RRC.HumanResources
+{
+    public class Employee
+    {
+        private decimal rateOfPay;
+        private double hoursWorked;
+
+        // Declare events
+        public event EventHandler RateOfPayChanged;
+        public event EventHandler HoursWorkedChanged;
+        public event EventHandler Paid;
+
+        public decimal RateOfPay
+        {
+            get 
+            { 
+                return this.rateOfPay; 
+            }
+            set
+            {
+                if (value != rateOfPay) // Only raise event if value changed
+                {
+                    this.rateOfPay = value;
+                    OnRateOfPayChanged();
+                }
+            }
+        }
+
+        public double HoursWorked
+        {
+            get
+            {
+                return this.hoursWorked;
+            }
+            set
+            {
+                if (value != hoursWorked) // Only raise event if value changed
+                {
+                    this.hoursWorked = value;
+                    OnHoursWorkedChanged();
+                }
+            }
+        }
+
+        public string Name
+        {
+            get; 
+            private set; 
+        }
+
+        // Other parts of the Employee class remain unchanged...
+
+        // Define "On" methods without the use of '?'
+        protected void OnRateOfPayChanged()
+        {
+            if (RateOfPayChanged != null)
+            {
+                RateOfPayChanged(this, EventArgs.Empty);
+            }
+        }
+
+        protected void OnHoursWorkedChanged()
+        {
+            if (HoursWorkedChanged != null)
+            {
+                HoursWorkedChanged(this, EventArgs.Empty);
+            }
+        }
+
+        protected void OnPaid()
+        {
+            if (Paid != null)
+            {
+                Paid(this, EventArgs.Empty);
+            }
+        }
+
+        // Add Pay method
+        public decimal Pay()
+        {
+            decimal amountPaid = rateOfPay * (decimal)hoursWorked;
+            HoursWorked = 0; // Reset hours worked after paying
+            OnPaid(); // Raise the Paid event
+            return amountPaid;
+        }
+    }
+}
+
+
+//Declare and define event handler methods for each of the events within the Employee class.
+
+using System;
+using ADEV.ACE.RRC.HumanResources;
+
+namespace EmployeeApp
+{
+    
+}
+
+
+
+
+
+
+
+//Instantiate three or more instances of the Employee class. Add each instance to a new generic List<T> collection.
+using System;
+using System.Collections.Generic;
+using ADEV.ACE.RRC.HumanResources;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Create a Dictionary to store employees by their names
+        Dictionary<string, Employee> employeeDict = new Dictionary<string, Employee>();
+
+        // Instantiate three employees
+        Employee john = new Employee
+        {
+            Name = "John Doe"
+        };
+        Employee jane = new Employee
+        {
+            Name = "Jane Smith"
+        };
+        Employee bob = new Employee
+        {Name = "Bob Brown"
+        };
+
+        // Add the employees to the dictionary
+        employeeDict.Add(john.Name, john);
+        employeeDict.Add(jane.Name, jane);
+        employeeDict.Add(bob.Name, bob);
+
+        // Subscribe to the events for each employee
+        foreach (Employee employee in employeeDict.Values)
+        {
+            employee.RateOfPayChanged += EmployeeRateOfPayChanged;
+            employee.HoursWorkedChanged += EmployeeHoursWorkedChanged;
+            employee.Paid += EmployeePaid;
+        }
+
+        // Example: Changing the rate of pay for all employees
+        foreach (Employee employee in employeeDict.Values)
+        {
+            employee.RateOfPay = 25.0m;
+        }
+
+        Console.WriteLine(employeeDict["Jane Smith"].Name); // Display Jane's name as an example
+
+        foreach (Employee employee in employeeDict.Values)
+        {
+            Console.WriteLine(employee.Name); // Display each employee's name
+        }
+
+        Console.Write("Press any key to continue...");
+        Console.ReadKey();
+    }
+
+    /// <summary>
+    /// Handles the event when the rate of pay changes.
+    /// </summary>
+    private static void EmployeeRateOfPayChanged(object sender, EventArgs e)
+    {
+        Console.WriteLine("The rate of pay has changed.");
+    }
+
+    /// <summary>
+    /// Handles the event when the hours worked changes.
+    /// </summary>
+    private static void EmployeeHoursWorkedChanged(object sender, EventArgs e)
+    {
+        Console.WriteLine("The number of hours worked has changed.");
+    }
+
+    /// <summary>
+    /// Handles the event when the employee is paid.
+    /// </summary>
+    private static void EmployeePaid(object sender, EventArgs e)
+    {
+        Employee emp = sender as Employee;
+        if (emp != null)
+        {
+            Console.WriteLine($"{emp.Name} has been paid.");
+        }
+    }
+}
+
+
+//Loop through all the Employees in the List. For each iteration, subscribe to all of the object’s events using the event handler methods completed in Step 1.
+using System;
+using System.Collections.Generic;
+using ADEV.ACE.RRC.HumanResources;
+
+namespace EmployeeApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Instantiate three employees
+            Employee john = new Employee { Name = "John Doe" };
+            Employee jane = new Employee { Name = "Jane Smith" };
+            Employee bob = new Employee { Name = "Bob Brown" };
+
+            // Create a List and add the employees
+            List<Employee> employees = new List<Employee> { john, jane, bob };
+
+            // Subscribe to the events for each employee
+            foreach (Employee employee in employees)
+            {
+                employee.RateOfPayChanged += EmployeeRateOfPayChanged;
+                employee.HoursWorkedChanged += EmployeeHoursWorkedChanged;
+                employee.Paid += EmployeePaid;
+            }
+
+            // Example: Changing the rate of pay for all employees
+            foreach (Employee employee in employees)
+            {
+                employee.RateOfPay = 25.0m;
+            }
+
+            Console.Write("Press any key to continue...");
+            Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Handles the event when the rate of pay changes.
+        /// </summary>
+        private static void EmployeeRateOfPayChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("The rate of pay has changed.");
+        }
+
+        /// <summary>
+        /// Handles the event when the hours worked changes.
+        /// </summary>
+        private static void EmployeeHoursWorkedChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("The number of hours worked has changed.");
+        }
+
+        /// <summary>
+        /// Handles the event when the employee is paid.
+        /// </summary>
+        private static void EmployeePaid(object sender, EventArgs e)
+        {
+            Employee emp = sender as Employee;
+            if (emp != null)
+            {
+                Console.WriteLine($"{emp.Name} has been paid.");
+            }
+        }
+    }
+}
+
+
+
+//Code another loop that increases each Employee’s rate of pay by a $1.35 and then Pay them.
+using System;
+using ADEV.ACE.RRC.HumanResources;
+using System.Collections.Generic;
+
+namespace EmployeeApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Create a List of employees
+            List<Employee> employees = new List<Employee>
+            {
+                new Employee { Name = "John Doe" },
+                new Employee { Name = "Jane Smith" },
+                new Employee { Name = "Bob Brown" }
+            };
+
+            // Loop through each employee and subscribe to their events
+            foreach (Employee employee in employees)
+            {
+                Console.WriteLine($"Employee: {employee.Name}");
+
+                // Subscribe to the events for each employee
+                employee.RateOfPayChanged += EmployeeRateOfPayChanged;
+                employee.HoursWorkedChanged += EmployeeHoursWorkedChanged;
+                employee.Paid += EmployeePaid;
+
+                // Make changes to trigger the events
+                employee.RateOfPay = 27.0m; // This should trigger the RateOfPayChanged event
+                employee.HoursWorked = 45.0; // This should trigger the HoursWorkedChanged event
+                decimal payment = employee.Pay(); // This should trigger the Paid event
+
+                Console.WriteLine($"Amount Paid: {payment:C}");
+            }
+
+            Console.Write("Press any key to continue...");
+            Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Handles the event when the rate of pay changes.
+        /// </summary>
+        private static void EmployeeRateOfPayChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("The rate of pay has changed.");
+        }
+
+        /// <summary>
+        /// Handles the event when the hours worked changes.
+        /// </summary>
+        private static void EmployeeHoursWorkedChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("The number of hours worked has changed.");
+        }
+
+        /// <summary>
+        /// Handles the event when the employee is paid.
+        /// </summary>
+        private static void EmployeePaid(object sender, EventArgs e)
+        {
+            Employee emp = sender as Employee;
+            if (emp != null)
+            {
+                Console.WriteLine($"{emp.Name} has been paid.");
+            }
+        }
+    }
+}
+
+
+foreach (Employee employee in employees)
+{
+    employee.RateOfPay += 1.35m;
+    decimal payment = employee.Pay();
+    Console.WriteLine($"{employee.Name}'s new Rate of Pay: {employee.RateOfPay:C}");
+    Console.WriteLine($"{employee.Name} has been paid: {payment:C}");
+}
+
+// Loop through each employee, increase their rate of pay by $1.35 and then pay them
+foreach (Employee employee in employees)
+{
+    employee.RateOfPay += 1.35m;
+    decimal paymentAfterRaise = employee.Pay(); // This should also trigger the Paid event
+    Console.WriteLine($"Amount Paid after raise: {paymentAfterRaise:C}");
+}
+
+
+Console.Write("Press any key to continue...");
+Console.ReadKey();
+
+
+//Create a new generic Dictionary<K, V> where the key is a string and the value is an Employee. Populate the Dictionary with data from the List. Use the Employee’s name as the key.
+// ... [existing code above this]
+
+using System;
+using System.Collections.Generic;
+using ADEV.ACE.RRC.HumanResources;
+
+namespace EmployeeApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Create a few Employee objects and add them to a list
+            List<Employee> employees = new List<Employee>
+            {
+                new Employee { Name = "John Doe" },
+                new Employee { Name = "Jane Smith" },
+                new Employee { Name = "Alice Johnson" }
+            };
+
+            // Create a dictionary and populate it using the list
+            Dictionary<string, Employee> employeeDict = new Dictionary<string, Employee>();
+            
+            foreach (Employee employee in employees)
+            {
+                employeeDict.Add(employee.Name, employee);
+            }
+
+            // Now you can access any Employee by their name:
+            if (employeeDict.ContainsKey("John Doe"))
+            {
+                Employee john = employeeDict["John Doe"];
+                Console.WriteLine($"Found {john.Name} in the dictionary!");
+            }
+
+            // ... [rest of the code]
+        }
+
+        // ... [event handlers and other methods]
+    }
+}
+
+//Set the hours worked of the second Employee in the Dictionary to a value greater than 40 and then Pay that employee.
+using System;
+using System.Collections.Generic;
+using ADEV.ACE.RRC.HumanResources;
+
+namespace EmployeeApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Create a few Employee objects and add them to a list
+            List<Employee> employees = new List<Employee>
+            {
+                new Employee { Name = "John Doe" },
+                new Employee { Name = "Jane Smith" },
+                new Employee { Name = "Alice Johnson" }
+            };
+
+            // Create a dictionary and populate it using the list
+            Dictionary<string, Employee> employeeDict = new Dictionary<string, Employee>();
+            
+            foreach (Employee employee in employees)
+            {
+                employeeDict.Add(employee.Name, employee);
+            }
+
+            // Access the second employee by key and set hours worked
+            if (employeeDict.ContainsKey("Jane Smith"))
+            {
+                Employee jane = employeeDict["Jane Smith"];
+                jane.HoursWorked = 45;
+                decimal payment = jane.Pay();
+                Console.WriteLine($"Paid {jane.Name} an amount of {payment:C}");
+            }
+
+            // ... [rest of the code]
+        }
+
+        // ... [event handlers and other methods]
+    }
+}
+
+
+using System;
+using System.Collections.Generic;
+using ADEV.ACE.RRC.HumanResources;
+
+namespace EmployeeApp
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 1. Event handler methods are defined below the main method.
+
+            // 2. Instantiate three or more instances of the Employee class. 
+            //    Add each instance to a new generic List<T> collection.
+            List<Employee> employees = new List<Employee>
+            {
+                new Employee{
+                    Name = "Hulk Hogan"
+                },
+                new Employee
+                {
+                    Name = "Kevin Nash"
+                },
+                new Employee
+                {
+                    Name = "Scott Hall"
+                }
+            };
+
+            // 3. Loop through all the Employees in the List. 
+            //    For each iteration, subscribe to all of the object’s events.
+            foreach (Employee employee in employees)
+            {
+                employee.RateOfPayChanged += EmployeeRateOfPayChanged;
+                employee.HoursWorkedChanged += EmployeeHoursWorkedChanged;
+                employee.Paid += EmployeePaid;
+            }
+
+            // 4. Code another loop that increases each Employee’s rate of pay by a $1.35 and then Pay them.
+            foreach (Employee employee in employees)
+            {
+                employee.RateOfPay += 1.35m;
+                employee.Pay();
+            }
+
+            // 5. Create a new generic Dictionary<K, V> and populate it using the List.
+            Dictionary<string, Employee> employeeDict = new Dictionary<string, Employee>();
+            foreach (Employee employee in employees)
+            {
+                employeeDict.Add(employee.Name, employee);
+            }
+
+            // 6. Set the hours worked of the second Employee in the Dictionary to a value greater than 40 and then Pay that employee.
+            if (employeeDict.ContainsKey("Kevin Nash"))
+            {
+                Employee kevin = employeeDict["Kevin Nash"];
+                kevin.HoursWorked = 42;
+                kevin.Pay();
+            }
+
+            Console.Write("Press any key to continue...");
+            Console.ReadKey();
+        }
+
+        private static void EmployeeRateOfPayChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("The rate of pay has changed.");
+        }
+
+        private static void EmployeeHoursWorkedChanged(object sender, EventArgs e)
+        {
+            Console.WriteLine("The number of hours worked has changed.");
+        }
+
+        private static void EmployeePaid(object sender, EventArgs e)
+        {
+            Employee emp = sender as Employee;
+            if (emp != null)
+            {
+                Console.WriteLine($"{emp.Name} has been paid.");
+            }
+        }
+    }
+}
